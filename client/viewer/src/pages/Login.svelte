@@ -18,6 +18,7 @@
       pass = ""
       usrn = ""
       console.log(usrn,pass)
+      window.location.href = "/";
     }
 
 </script>
@@ -46,7 +47,7 @@
         
           <div class="grid grid-cols-2 gap-2">
             <Button onclick={submit}> Login </Button>
-            <Button onclick={cancel}> Cancel </Button>
+            <Button onclick={cancel} > Cancel </Button>
           </div>
         </Card.Content>  
         </Card.Root>  

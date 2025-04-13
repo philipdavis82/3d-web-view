@@ -5,9 +5,11 @@
     // import { Input } from "../lib/components/ui/input/index.js"
     import * as Card from "../lib/components/ui/card/index.js";
     // import { Content } from "node_modules/bits-ui/dist/bits/accordion/exports.js";
-    import { Router, Link, Route } from "svelte-routing";
+
 
 </script>
+
+
 
 <div class="flex flex-col h-screen text-center dark">
     <header style="" class="sticky top-0 text-center">
@@ -19,7 +21,7 @@
                 3D Viewer
             </div>
             <div>
-                <Button href="Login" class="text-center text-[10px] h-5 w-10" variant="outline">
+                <Button href="/login" class="text-center text-[10px] h-5 w-10" variant="outline">
                     Login
                 </Button>
             </div>

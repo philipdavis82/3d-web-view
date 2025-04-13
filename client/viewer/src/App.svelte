@@ -2,22 +2,22 @@
   import "./app.css";
   import Login from "./pages/Login.svelte" 
   import MainPage from "./pages/MainPage.svelte"
+  import { Router, Link, Route } from "svelte-routing";
+ 
+  export let url = "";
 </script>
 
 
-<main> 
-  <!-- <Login></Login> -->
-    <MainPage></MainPage>
-  
-</main>
 
-<!-- <style>
-  .background {
-    background: linear-gradient(to right, #222244, #222222 );
-    overflow: hidden;
-    color: #E0E0E0;
-  }
-</style> -->
+<main> 
+  <Router {url}>
+    <div>
+      <Route path="/login" ><Login/> </Route>
+      <Route path="/"><this></this></Route>
+    </div>
+  </Router>  
+  <MainPage></MainPage>
+</main>
 
 <style>
   main {
