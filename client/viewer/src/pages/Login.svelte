@@ -6,12 +6,14 @@
   
     import { Input } from "../lib/components/ui/input/index.js";
     import Label from "../lib/components/ui/label/label.svelte";
+    import Viewer from "./Viewer.svelte";
     
     let pass = $state("");
     let usrn = $state("");
   
     function submit(data:any) {
-      console.log(usrn,pass)
+      console.log(usrn,pass);
+      window.location.href = "/viewer";
     }
 
     function cancel(data:any) {

@@ -2,7 +2,8 @@
   import "./app.css";
   import Login from "./pages/Login.svelte" 
   import MainPage from "./pages/MainPage.svelte"
-  import { Router, Link, Route } from "svelte-routing";
+  import Viewer from "./pages/Viewer.svelte"
+  import { Router, Link, Route } from "svelte-routing"
  
   export let url = "";
 </script>
@@ -12,11 +13,11 @@
 <main> 
   <Router {url}>
     <div>
+      <Route path="/viewer" ><Viewer/> </Route>
       <Route path="/login" ><Login/> </Route>
-      <Route path="/"><this></this></Route>
+      <Route path="/"><MainPage></MainPage></Route>
     </div>
   </Router>  
-  <MainPage></MainPage>
 </main>
 
 <style>

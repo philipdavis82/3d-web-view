@@ -49,13 +49,3 @@
     <div>Hello</div>
     <div>Hello</div>
 </div>
-
-
-<!-- <style>
-    .mainpage {
-        display: stretch;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-</style> -->
