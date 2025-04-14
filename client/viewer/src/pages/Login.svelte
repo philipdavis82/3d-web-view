@@ -13,7 +13,14 @@
   
     function submit(data:any) {
       console.log(usrn,pass);
-      window.location.href = "/viewer";
+      if (usrn == "admin" && pass == "admin") {
+        console.log("Login successful");
+        window.location.href = "/viewer";
+      } else {
+        console.log("Login failed");
+        alert("Invalid username or password");
+      }
+      // window.location.href = "/viewer";
     }
 
     function cancel(data:any) {

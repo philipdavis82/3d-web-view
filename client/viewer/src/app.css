@@ -29,7 +29,10 @@
     
     --background: #222222;
     --foreground: 240 5% 90%;
+    --collapseable:  240 14% 10%;
+    --collapseable-foreground: 240 5% 90%;
     --card: 240 14% 10%;
+    /* --card: 240 14% 10%; */
     --card-foreground: 240 5% 90%;
     --popover: 240 14% 5%;
     --popover-foreground: 240 5% 90%;
