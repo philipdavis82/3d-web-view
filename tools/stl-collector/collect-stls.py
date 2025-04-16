@@ -1,0 +1,138 @@
+from __future__ import annotations
+
+import os,sys
+import glob,pickle
+
+from typing_extensions import Generator,Callable,Optional
+
+    
+class FileObject():
+    path:str
+
+    def __init__(self,path:str):
+        self.path = os.path.abspath(path)
+    
+    def ext(self) -> str:
+        return self.path.split(".")[-1].lower()
+    
+    def name(self) -> str:
+        return os.path.basename(self.path)
+
+    def exists(self) -> bool:
+        return os.path.exists(self.path)
+    
+    def isDir(self) -> bool:
+        return os.path.isdir(self.path)
+
+    def isFile(self) -> bool:
+        return os.path.isfile(self.path)
+
+    def dirs(self) -> Generator[FileObject] :
+        for file in glob.glob(os.path.join(self.path,"*")):
+            fo = FileObject(file)
+            if(fo.isDir()): yield fo
+    
+    def files(self) -> Generator[FileObject] :
+        for file in glob.glob(os.path.join(self.path,"*")):
+            fo = FileObject(file)
+            if(fo.isFile()): yield fo
+
+class Item():
+    parent:ItemGraph
+    file:FileObject
+    def __init__(self,file:FileObject,parent:ItemGraph):
+        self.parent = parent
+        self.file   = file
+
+class ItemGraph():  
+    file:FileObject
+    parent:ItemGraph
+    children:list[ItemGraph]
+    items:list[Item]
+    def __init__(self,file:FileObject,parent:Optional[ItemGraph] = None):
+        self.file     = file
+        self.parent   = parent
+        self.children = []
+        self.items    = []
+    
+    def addItem(self,item:Item):
+        self.items.append(item)
+    
+    def addChild(self,child:ItemGraph):
+        self.children.append(child)
+
+    def str(self,lines:list[str]=None,tab:str="") -> str:
+        output = lambda lines: None 
+        if lines is None: 
+            lines = []
+            lines.append(tab+self.file.name())
+            output = lambda lines: "\n".join(lines)
+
+        for i,item in enumerate(self.items):
+            lines.append(tab)
+            if(i == len(self.items)-1 and len(self.children) == 0): 
+                lines[-1] += "└── " + item.file.name()
+            else:                       
+                lines[-1] += "├── " + item.file.name()
+        for i,child in enumerate(self.children):
+            lines.append(tab)
+            if i == len(self.children) - 1:
+                lines[-1] += "├── " + child.file.name()
+            else:
+                lines[-1] += "├── " + child.file.name()
+            child.str(lines,tab+"│   ")
+        
+        return output(lines)
+
+
+        
+
+def recurssive_search(cdir:FileObject, check:Callable[[FileObject],bool], graph:ItemGraph) -> bool:
+    found = False
+    for file in cdir.files():
+        # print(file.path)
+        if(check(file)):
+            graph.addItem(Item(file,graph))
+            found = True
+        else:
+            print(file.path)
+
+    for dir in cdir.dirs():
+        next_graph = ItemGraph(dir,graph)
+        next_found = recurssive_search(dir,check,next_graph)
+        if(next_found):
+            graph.addChild(next_graph)
+            found = True
+    
+    return found
+
+def main_search():
+    if(len(sys.argv) <= 1):
+        print("python collect-stls.py [root path]")
+        exit(-1)
+    root = sys.argv[1]
+    print(f"Search Root: {root}")
+    root_obj   = FileObject(root)
+    root_graph = ItemGraph(root_obj)
+    recurssive_search(
+        root_obj,
+        lambda file: file.ext()=="stl",
+        root_graph
+    ) 
+    print(root_graph.str())
+    with open("stl_graph.pickle","wb") as file:
+        pickle.dump(root_graph,file)
+
+def main_load():
+    with open("stl_graph.pickle","rb") as file:
+        root_graph = pickle.load(file)
+    print(root_graph.str())
+
+
+if __name__ == "__main__" : 
+    
+    # main_search()
+    main_load()
+
+    
+        
