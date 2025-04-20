@@ -8,18 +8,36 @@
     import Label from "../lib/components/ui/label/label.svelte";
     import Viewer from "./Viewer.svelte";
     
+    import * as djauth from "../lib/hooks/django-auth.js";
+
     let pass = $state("");
     let usrn = $state("");
   
-    function submit(data:any) {
+    async function submit(data:any) {
       console.log(usrn,pass);
-      if (usrn == "admin" && pass == "admin") {
+      
+      await djauth.authenticateWithDjango("http://127.0.0.1:8000", usrn, pass);
+      let table = {
+        headers: djauth.addAuthHeader({
+          'Content-Type': 'application/json'
+        })
+      };
+
+      if(djauth.isAuthenticated()){
         console.log("Login successful");
-        window.location.href = "/viewer";
+        // window.location.href = "/viewer";
       } else {
         console.log("Login failed");
         alert("Invalid username or password");
       }
+
+      // if (usrn == "admin" && pass == "admin") {
+      //   console.log("Login successful");
+      //   window.location.href = "/viewer";
+      // } else {
+      //   console.log("Login failed");
+      //   alert("Invalid username or password");
+      // }
       // window.location.href = "/viewer";
     }
 

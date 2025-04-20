@@ -36,8 +36,18 @@ router.register(r'directories', StlViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
+from django.views.decorators.csrf import csrf_exempt
+
 urlpatterns = [
     path('admin/'   , admin.site.urls),
     path('api/'     , include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    # path('api-auth/', csrf_exempt(include('rest_framework.urls', namespace='rest_framework'))),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    # path('csrf-token/', views.csrf_token, name='csrf_token'),
+    path('api-token-auth/', views.CustomAuthToken.as_view()),
 ]
+
+# from rest_framework.authtoken import views
+# urlpatterns += [
+#     path('api-token-auth2/', csrf_exempt(views.obtain_auth_token))
+# ]

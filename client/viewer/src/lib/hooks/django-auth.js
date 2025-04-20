@@ -1,5 +1,16 @@
 // Django Authentication Client
 
+// /**
+//  * Authenticates with Django REST framework and stores the token
+//  * @param {string} baseUrl - API base URL (e.g., 'https://api.example.com')
+//  */
+// async function getCSRFToken(baseUrl) {
+//   const response = await fetch(`${baseUrl}/csrf-token/`);
+//   const data = await response.json();
+//   console.log('Response:', data);
+//   return data.csrfToken;
+// }
+
 /**
  * Authenticates with Django REST framework and stores the token
  * @param {string} baseUrl - API base URL (e.g., 'https://api.example.com')
@@ -20,7 +31,7 @@ export async function authenticateWithDjango(baseUrl, username, password) {
         password: password
       })
     });
-
+    console.log('Response:', response);
     // Check if request was successful
     if (!response.ok) {
       const errorData = await response.json();
