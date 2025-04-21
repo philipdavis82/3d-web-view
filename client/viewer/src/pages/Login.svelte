@@ -25,7 +25,8 @@
 
       if(djauth.isAuthenticated()){
         console.log("Login successful");
-        // window.location.href = "/viewer";
+        window.location.href = "/viewer";
+        // window.location.href = "http://localhost:5173/login"
       } else {
         console.log("Login failed");
         alert("Invalid username or password");
