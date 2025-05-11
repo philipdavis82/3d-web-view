@@ -47,6 +47,7 @@ urlpatterns = [
     path('api/stls/name/<str:name>/', viewer.StlByNameViewSet.as_view({'get': 'list'}), name='stl-by-name'),
     path('api/stls/dirid/<int:dirid>/', viewer.StlByParentIdViewSet.as_view({'get': 'list'}), name='stl-by-dirid'),
     path('api/directories/dirid/<int:dirid>/', viewer.DirByParentIdViewSet.as_view({'get': 'list'}), name='dir-by-dirid'),
+    path('api/stl/<int:id>/', viewer.get_stl_file, name='get_stl_file'),
 ]
 
 # from rest_framework.authtoken import views

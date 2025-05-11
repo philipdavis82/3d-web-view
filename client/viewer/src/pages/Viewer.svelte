@@ -6,9 +6,9 @@
   import { cn } from "$lib/utils";
   import * as djauth from "../lib/hooks/django-auth.js";
   import * as djquery from "../lib/hooks/django-query.js";
-
+  
   import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
-  let isOpen = true;
+  let isOpen = $state(true);
 
   if (djauth.isAuthenticated()) {
     console.log("Login successful");
@@ -17,10 +17,10 @@
     // window.location.href = "http://localhost:5173/login";
   }
 
-  let CurrentDirectory:Array<any> = [];
-  let CurrentDirectoryID = 0;
+  let CurrentDirectory:Array<any> = $state([]);
+  let CurrentDirectoryID = $state(0);
   let LastDirectoryIDs:Array<number>   = [];
-  let CurrentFiles:Array<any> = [];
+  let CurrentFiles:Array<any> = $state([]);
   let CurrentFilesID:number = 0;
   async function topLevel() {
     let dirid = LastDirectoryIDs.pop();
@@ -50,11 +50,11 @@
     CurrentFilesID = id;
   };
 
-  let MainFile: any = {
+  let MainFile: any = $state({
     name: "No file selected",
     path: "",
     id: -1,
-  };
+  });
   async function setAsMainFile(file:any) {
     // console.log("Setting as main file:", file);
     MainFile = file;
@@ -62,13 +62,14 @@
 
   topLevel();
 
-  import { slide } from "svelte/transition";
-  import { quintOut } from "svelte/easing";
+  // import { slide } from "svelte/transition";
+  // import { quintOut } from "svelte/easing";
+  import Turntable from "$lib/components/3d/Turntable.svelte";
+  import {Canvas} from "@threlte/core";
   
 </script>
 
 <div class="h-screen dark flex flex-col">
-<!-- <div class="h-screen dark"> -->
   <Collapsible.Root open={isOpen} class="text-center items-center p-0">
     <Card.Root
       style="border-radius:0px; border:0px; border-color: #00000000;"
@@ -78,7 +79,7 @@
         <div class="text-left pl-2 pt-1">
           <Collapsible.Trigger asChild class="p-0 text-center items-center">
             <Button
-              on:click={() => (isOpen = !isOpen)}
+              onclick={() => {isOpen = !isOpen;}}
               variant="secondary"
               class="w-8 h-8 p-0"
               style="border-radius:3pt; border-width:1px;"
@@ -151,15 +152,21 @@
     </Resizable.Pane>
     <Resizable.Handle />
     <Resizable.Pane defaultSize={50}>
-      <div class="flex items-center justify-center p-6">
-        <span class="font-semibold">
+      <div class="flex flex-col w-full h-full items-center justify-center p-6">
           <div>
             {MainFile.name}
           </div>
           <div>
             {MainFile.path}
           </div>
-        </span>
+          <!-- 3D DIV MOVE TO COMPONENT LIB -->
+          <div class="flex-1 w-full h-full items-center justify-center p-6 border">
+            <!-- <<span class="font-semibold">3D Viewer</span>> -->
+          <Canvas>
+            <Turntable/>
+          </Canvas>
+        </div>
+          <!-- 3D DIV MOVE TO COMPONENT LIB -->
       </div>
     </Resizable.Pane>
   </Resizable.PaneGroup>

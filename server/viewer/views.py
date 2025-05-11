@@ -65,3 +65,17 @@ class DirByParentIdViewSet(viewsets.ReadOnlyModelViewSet):
         objs = DIRECTORY.objects.filter(dirid=dirid_)
         print("DIR Name Query: ",dirid_,objs)
         return objs
+
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
+
+def get_stl_file(request, id):
+    """
+    Serves the .STL file associated with a model instance.
+    """
+    instance = get_object_or_404(STL, id=id)  # Or however you identify your file
+    file_path = instance.path  # Assuming your model has an stl_file field
+
+    response = FileResponse(open(file_path, 'rb'), content_type='application/octet-stream')
+    response['Content-Disposition'] = f'attachment; filename="{instance.name}"' # optional
+    return response
