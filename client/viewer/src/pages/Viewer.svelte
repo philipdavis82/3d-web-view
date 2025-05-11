@@ -5,22 +5,70 @@
   import * as Collapsible from "$lib/components/ui/collapsible/index.js";
   import { cn } from "$lib/utils";
   import * as djauth from "../lib/hooks/django-auth.js";
+  import * as djquery from "../lib/hooks/django-query.js";
 
+  import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
   let isOpen = true;
 
   if (djauth.isAuthenticated()) {
     console.log("Login successful");
   } else {
     console.log("Login failed");
-    window.location.href = "http://localhost:5173/login";
+    // window.location.href = "http://localhost:5173/login";
   }
+
+  let CurrentDirectory:Array<any> = [];
+  let CurrentDirectoryID = 0;
+  let LastDirectoryIDs:Array<number>   = [];
+  let CurrentFiles:Array<any> = [];
+  let CurrentFilesID:number = 0;
+  async function topLevel() {
+    let dirid = LastDirectoryIDs.pop();
+    if(dirid === undefined) {
+      dirid = 0;
+    }
+    const response = await djquery.getDirectories(dirid);
+    await getFiles(dirid);
+    console.log("Response:", response);
+    CurrentDirectory = response.results;
+    CurrentDirectoryID = dirid;
+  };
+
+  async function nextLevel(id:number) {
+    LastDirectoryIDs.push(CurrentDirectoryID);
+    const response = await djquery.getDirectories(id);
+    console.log("Response:", response);
+    CurrentDirectory = response.results;
+    CurrentDirectoryID = id;
+  };
+
+  async function getFiles(id:number) {
+    if(CurrentFilesID == id) return;
+    const response = await djquery.getSTLs(id);
+    console.log("Response:", response);
+    CurrentFiles = response.results;
+    CurrentFilesID = id;
+  };
+
+  let MainFile: any = {
+    name: "No file selected",
+    path: "",
+    id: -1,
+  };
+  async function setAsMainFile(file:any) {
+    // console.log("Setting as main file:", file);
+    MainFile = file;
+  };
+
+  topLevel();
 
   import { slide } from "svelte/transition";
   import { quintOut } from "svelte/easing";
   
 </script>
 
-<div class="h-screen dark">
+<div class="h-screen dark flex flex-col">
+<!-- <div class="h-screen dark"> -->
   <Collapsible.Root open={isOpen} class="text-center items-center p-0">
     <Card.Root
       style="border-radius:0px; border:0px; border-color: #00000000;"
@@ -66,17 +114,35 @@
       </Collapsible.Content>
     </Card.Root>
   </Collapsible.Root>
-
-  <Resizable.PaneGroup direction="horizontal" class=" border">
-    <Resizable.Pane defaultSize={35}>
+  <Resizable.PaneGroup direction="horizontal" class="border">
+    <Resizable.Pane defaultSize={20}>
       <Resizable.PaneGroup direction="vertical">
-        <Resizable.Pane defaultSize={25}>
-          <div class="flex h-full items-center justify-center p-6">
-            <span class="font-semibold">Two</span>
+        <Resizable.Pane defaultSize={100}  class="flex flex-col justify-center items-top p-6">
+          
+          <Button onclick={topLevel}>Back {CurrentDirectoryID}</Button>
+          <div class="flex flex-row justify-center h-full">
+            <ScrollArea class="flex-1 justify-start items-top p-6 border">
+                <span class="font-semibold">
+                  {#each CurrentDirectory as item, index}
+                    <div class="listItem">
+                      <Button variant="ghost" onclick={()=>{nextLevel(item.id);getFiles(item.id)}}>{index + 1}. {item.name}</Button>
+                    </div>
+                  {/each}
+                </span>
+            </ScrollArea>
+            <ScrollArea class="flex-1 justify-start items-top p-6 border">
+              <span class="font-semibold">
+                {#each CurrentFiles as item, index}
+                  <div class="listItem">
+                    <Button variant="ghost" onclick={()=>{setAsMainFile(item)}}>{index + 1}. {item.name}</Button>
+                  </div>
+                {/each}
+              </span>
+          </ScrollArea>
           </div>
         </Resizable.Pane>
         <Resizable.Handle />
-        <Resizable.Pane defaultSize={75}>
+        <Resizable.Pane defaultSize={20}>
           <div class="flex h-full items-center justify-center p-6">
             <span class="font-semibold">Three</span>
           </div>
@@ -86,7 +152,14 @@
     <Resizable.Handle />
     <Resizable.Pane defaultSize={50}>
       <div class="flex items-center justify-center p-6">
-        <span class="font-semibold">One</span>
+        <span class="font-semibold">
+          <div>
+            {MainFile.name}
+          </div>
+          <div>
+            {MainFile.path}
+          </div>
+        </span>
       </div>
     </Resizable.Pane>
   </Resizable.PaneGroup>

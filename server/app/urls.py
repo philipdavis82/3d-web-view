@@ -27,12 +27,13 @@ from rest_framework import routers
 
 from app          import views
 from viewer.views import DirectoryViewSet,StlViewSet
+import viewer.views as viewer
 
 router = routers.DefaultRouter()
 router.register(r'users'      , views.UserViewSet)
 router.register(r'groups'     , views.GroupViewSet)
-router.register(r'stls'       , DirectoryViewSet)
-router.register(r'directories', StlViewSet)
+router.register(r'stls'       , StlViewSet)
+router.register(r'directories', DirectoryViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -41,10 +42,11 @@ from django.views.decorators.csrf import csrf_exempt
 urlpatterns = [
     path('admin/'   , admin.site.urls),
     path('api/'     , include(router.urls)),
-    # path('api-auth/', csrf_exempt(include('rest_framework.urls', namespace='rest_framework'))),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # path('csrf-token/', views.csrf_token, name='csrf_token'),
     path('api-token-auth/', views.CustomAuthToken.as_view()),
+    path('api/stls/name/<str:name>/', viewer.StlByNameViewSet.as_view({'get': 'list'}), name='stl-by-name'),
+    path('api/stls/dirid/<int:dirid>/', viewer.StlByParentIdViewSet.as_view({'get': 'list'}), name='stl-by-dirid'),
+    path('api/directories/dirid/<int:dirid>/', viewer.DirByParentIdViewSet.as_view({'get': 'list'}), name='dir-by-dirid'),
 ]
 
 # from rest_framework.authtoken import views

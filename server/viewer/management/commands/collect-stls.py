@@ -143,17 +143,26 @@ def main_load() -> ItemGraph:
 
 def recurssive_filter(graph:ItemGraph,parent:view.DIRECTORY) -> None:
     for item in graph.items:
-        stl = view.STL()
-        stl.path = item.file.path
-        stl.name = item.file.name()
-        stl.dir  = parent
+        print("Item: ",item.file.path)
+        stl = view.STL.objects.get_or_create(
+            dir  = parent,
+            path = item.file.path,
+            name = item.file.name())[0]
+        # stl.path = item.file.path
+        # stl.name = item.file.name()
+        # stl.dir  = parent
+        stl.dirid = parent.id
         stl.save()
     
     for child in graph.children:
-        dir = view.DIRECTORY()
-        dir.dir  = parent
-        dir.path = child.file.path
-        dir.name = child.file.name()
+        dir = view.DIRECTORY.objects.get_or_create(
+            dir  = parent,
+            path = child.file.path,
+            name = child.file.name())[0]
+        # dir.dir  = parent
+        # dir.dirid = parent.id
+        # dir.path = child.file.path
+        # dir.name = child.file.name()
         dir.save()
         recurssive_filter(child,dir) 
 
@@ -162,9 +171,12 @@ class Command(BaseCommand):
     help = "Populates database"
     def handle(self, *args, **kwargs):
         graph = main_load()
-        root_entry = view.DIRECTORY()
-        root_entry.path = graph.file.path
-        root_entry.name = graph.file.name()
+        root_entry = view.DIRECTORY.objects.get_or_create(
+            path = graph.file.path,
+            name = graph.file.name())[0]
+        # root_entry.path = graph.file.path
+        # root_entry.name = graph.file.name()
+        root_entry.dirid = 0
         root_entry.save()
         recurssive_filter(graph,root_entry)
         

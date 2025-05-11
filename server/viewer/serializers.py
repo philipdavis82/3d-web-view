@@ -5,10 +5,10 @@ from rest_framework import serializers
 class DirectorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model  = DIRECTORY
-        fields = ['path', 'name', 'dir']
+        fields = ['id','path', 'name', 'dir', 'dirid']
 
 
 class StlSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model  = STL
-        fields = ['path', 'name', 'dir', 'icon', 'prev']
+        fields = ['id','path', 'name', 'dir', 'icon', 'prev', 'dirid']

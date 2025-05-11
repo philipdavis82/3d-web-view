@@ -10,6 +10,7 @@ class DIRECTORY(models.Model):
         null=True, 
         blank=True
     )
+    dirid = models.IntegerField(null=True)
 
 class STL(models.Model):
     path = models.CharField(max_length=256)
@@ -17,4 +18,5 @@ class STL(models.Model):
     dir  = models.ForeignKey(DIRECTORY, on_delete=models.CASCADE)
     icon = models.CharField(max_length=16)
     prev = models.CharField(max_length=256) # Preview
+    dirid = models.IntegerField(null=True)
 
