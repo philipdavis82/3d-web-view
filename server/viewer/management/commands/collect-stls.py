@@ -116,11 +116,11 @@ def recurssive_search(cdir:FileObject, check:Callable[[FileObject],bool], graph:
     
     return found
 
-def main_search():
-    if(len(sys.argv) <= 1):
-        print("python collect-stls.py [root path]")
-        exit(-1)
-    root = sys.argv[1]
+def main_search(root):
+    # if(len(sys.argv) <= 1):
+        # print("python collect-stls.py [root path]")
+        # exit(-1)
+    # root = sys.argv[1]
     print(f"Search Root: {root}")
     root_obj   = FileObject(root)
     root_graph = ItemGraph(root_obj)
@@ -148,9 +148,6 @@ def recurssive_filter(graph:ItemGraph,parent:view.DIRECTORY) -> None:
             dir  = parent,
             path = item.file.path,
             name = item.file.name())[0]
-        # stl.path = item.file.path
-        # stl.name = item.file.name()
-        # stl.dir  = parent
         stl.dirid = parent.id
         stl.save()
     
@@ -159,10 +156,7 @@ def recurssive_filter(graph:ItemGraph,parent:view.DIRECTORY) -> None:
             dir  = parent,
             path = child.file.path,
             name = child.file.name())[0]
-        # dir.dir  = parent
-        # dir.dirid = parent.id
-        # dir.path = child.file.path
-        # dir.name = child.file.name()
+        dir.dirid = parent.id
         dir.save()
         recurssive_filter(child,dir) 
 
@@ -170,6 +164,14 @@ def recurssive_filter(graph:ItemGraph,parent:view.DIRECTORY) -> None:
 class Command(BaseCommand):
     help = "Populates database"
     def handle(self, *args, **kwargs):
+        if len(args) < 1 and not os.path.exists(DATAPATH):
+            print("python collect-stls.py [root path]")
+            exit(-1)
+        if len(args) > 0:
+            root = args[0]
+            print(f"Search Root: {root}")
+            main_search(root)
+        print("Loading Graph Into Database")
         graph = main_load()
         root_entry = view.DIRECTORY.objects.get_or_create(
             path = graph.file.path,
@@ -179,12 +181,13 @@ class Command(BaseCommand):
         root_entry.dirid = 0
         root_entry.save()
         recurssive_filter(graph,root_entry)
+        # print("Done")
         
         
 
-if __name__ == "__main__" : 
-    main_search()
-    # main_load()
+# if __name__ == "__main__" : 
+#     main_search()
+#     # main_load()
 
     
         
