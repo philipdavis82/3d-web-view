@@ -113,30 +113,30 @@ export function logout() {
 /**
  * Example usage of the authentication functions
  */
-export async function exampleUsage() {
-  // Login
-  try {
-    const baseUrl = 'https://api.example.com';
-    const username = 'user123';
-    const password = 'securepassword';
+// export async function exampleUsage() {
+//   // Login
+//   try {
+//     const baseUrl = 'https://api.example.com';
+//     const username = 'user123';
+//     const password = 'securepassword';
 
-    await authenticateWithDjango(baseUrl, username, password);
-    let table = {
-      headers: addAuthHeader({
-        'Content-Type': 'application/json'
-      })
-    }; 
-    // Make authenticated request
-    if (isAuthenticated()) {
-      const response = await fetch(`${baseUrl}/api/protected-resource/`,
-        table  
-      );
+//     await authenticateWithDjango(baseUrl, username, password);
+//     let table = {
+//       headers: addAuthHeader({
+//         'Content-Type': 'application/json'
+//       })
+//     }; 
+//     // Make authenticated request
+//     if (isAuthenticated()) {
+//       const response = await fetch(`${baseUrl}/api/protected-resource/`,
+//         table  
+//       );
 
-      const data = await response.json();
-      console.log('Protected data:', data);
-    }
-  } catch (error) {
-    console.error('Error in example:', error);
-  }
-}
+//       const data = await response.json();
+//       console.log('Protected data:', data);
+//     }
+//   } catch (error) {
+//     console.error('Error in example:', error);
+//   }
+// }
 

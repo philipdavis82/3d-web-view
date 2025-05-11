@@ -8,13 +8,13 @@
   import * as djquery from "../lib/hooks/django-query.js";
   
   import ScrollArea from "$lib/components/ui/scroll-area/scroll-area.svelte";
-  let isOpen = $state(true);
+  let isOpen = $state(false);
 
   if (djauth.isAuthenticated()) {
     console.log("Login successful");
   } else {
     console.log("Login failed");
-    // window.location.href = "http://localhost:5173/login";
+    window.location.href = "http://localhost:5173/login";
   }
 
   let CurrentDirectory:Array<any> = $state([]);
@@ -47,6 +47,11 @@
     const response = await djquery.getSTLs(id);
     console.log("Response:", response);
     CurrentFiles = response.results;
+    const depth2 = await djquery.getDirectories(id);
+    for (const item of depth2.results) {
+      const response = await djquery.getSTLs(item.id);
+      CurrentFiles.push(...response.results);
+    }
     CurrentFilesID = id;
   };
 
@@ -55,18 +60,25 @@
     path: "",
     id: -1,
   });
+  import Turntable from "$lib/components/3d/Turntable.svelte";
+  // import { rotateCurrentModel } from "$lib/components/3d/Turntable.svelte";
+  import {Canvas} from "@threlte/core";
+  
+  let TurntablePropery:any;
+  
   async function setAsMainFile(file:any) {
     // console.log("Setting as main file:", file);
     MainFile = file;
+    if(TurntablePropery) {
+      TurntablePropery.loadSTL(MainFile.id);
+    }
+    // await Turntable.loadSTL(file.id);
   };
 
   topLevel();
 
-  // import { slide } from "svelte/transition";
-  // import { quintOut } from "svelte/easing";
-  import Turntable from "$lib/components/3d/Turntable.svelte";
-  import {Canvas} from "@threlte/core";
-  
+ 
+
 </script>
 
 <div class="h-screen dark flex flex-col">
@@ -153,18 +165,21 @@
     <Resizable.Handle />
     <Resizable.Pane defaultSize={50}>
       <div class="flex flex-col w-full h-full items-center justify-center p-6">
-          <div>
+          <div class="flex-1">
             {MainFile.name}
           </div>
-          <div>
+          <div class="flex-2">
             {MainFile.path}
           </div>
+          <div class="flex-3">
+            <Button onclick={() => {TurntablePropery.rotateCurrentModel()}}>Rotate</Button>
+          </div>
           <!-- 3D DIV MOVE TO COMPONENT LIB -->
-          <div class="flex-1 w-full h-full items-center justify-center p-6 border">
-            <!-- <<span class="font-semibold">3D Viewer</span>> -->
-          <Canvas>
-            <Turntable/>
+          <div class="flex-4 w-full h-full items-center justify-center p-6 border">
+          <Canvas renderMode="on-demand">
+            <Turntable bind:this={TurntablePropery} />
           </Canvas>
+          
         </div>
           <!-- 3D DIV MOVE TO COMPONENT LIB -->
       </div>

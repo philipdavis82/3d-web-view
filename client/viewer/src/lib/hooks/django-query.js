@@ -64,7 +64,7 @@ export async function getSTLs(id){
 /**
 / * Fetches directories from the Django API
 / * @param   {number} id - User's password
-/ * @returns {Promise<any>} - Authentication token if successful
+/ * @returns {Promise<Blob>} - Authentication token if successful
 /*/
 export async function getSTLfile(id){
     const url = 'http://127.0.0.1:8000/api/stl/'+id;
@@ -83,7 +83,8 @@ export async function getSTLfile(id){
         throw new Error('Network response was not ok');
         }
 
-        const data = await response.json();
+        // const data = await response.json();
+        const data = response.blob();
         return data;
     } catch (error) {
         console.error('Error fetching directories:', error);
